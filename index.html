@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>安全人SBTI人格测试 · 20题版</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: #e8f5ee;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 60px;
+  }
+
+  .quiz-app {
+    width: 100%;
+    max-width: 680px;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(45,106,79,0.12);
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    background: linear-gradient(145deg, #152f20, #1e4d35 50%, #2a6a4e);
+    padding: 48px 32px 44px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -70px; right: -70px;
+    width: 240px; height: 240px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -90px; left: -50px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-icon { font-size: 40px; margin-bottom: 14px; }
+  .hero h1 {
+    color: #fff;
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .hero h1 em { font-style: normal; color: #95d5b2; }
+  .hero p {
+    color: rgba(255,255,255,0.62);
+    font-size: 14px;
+    line-height: 1.8;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(82,183,136,0.18);
+    border: 1px solid rgba(82,183,136,0.3);
+    color: #95d5b2;
+    font-size: 12px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-top: 18px;
+    font-weight: 600;
+    letter-spacing: 1px;
+  }
+
+  /* ===== START SCREEN ===== */
+  .start-screen {
+    padding: 36px 28px;
+    text-align: center;
+    background: #fff;
+  }
+  .start-rules {
+    background: #f0faf4;
+    border: 1.5px solid #c7e8d4;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+  .start-rules-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2d6a4f;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+  }
+  .start-rules ul {
+    list-style: none;
+    font-size: 14px;
+    color: #555;
+    line-height: 2;
+  }
+  .start-rules ul li::before {
+    content: '✓ ';
+    color: #52b788;
+    font-weight: 700;
+  }
+  .start-btn {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 16px;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 2px;
+    font-family: inherit;
+    box-shadow: 0 4px 16px rgba(45,106,79,0.3);
+    transition: all 0.2s;
+  }
+  .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(45,106,79,0.4); }
+
+  /* ===== PROGRESS ===== */
+  .progress-wrap {
+    padding: 16px 24px 0;
+    background: #fff;
+  }
+  .progress-info {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .progress-label { font-size: 13px; color: #888; font-weight: 500; }
+  .progress-label strong { color: #2d6a4f; font-size: 16px; }
+  .progress-bar-bg {
+    width: 100%; height: 8px; background: #e8f5ee;
+    border-radius: 10px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2d6a4f, #52b788);
+    border-radius: 10px;
+    transition: width 0.35s ease;
+    width: 0%;
+  }
+
+  /* ===== QUESTION ===== */
+  .question-area {
+    padding: 24px 24px 16px;
+    background: #fff;
+  }
+  .q-card {
+    display: none;
+    animation: slideIn 0.3s ease;
+  }
+  .q-card.active { display: block; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .q-number {
+    font-size: 12px; color: #52b788; font-weight: 700;
+    letter-spacing: 2px; margin-bottom: 10px;
+  }
+  .q-text {
+    font-size: 17px; font-weight: 700; color: #1a3a2a;
+    line-height: 1.65; margin-bottom: 18px; letter-spacing: 0.3px;
+  }
+
+  /* ===== OPTIONS ===== */
+  .options { display: flex; flex-direction: column; gap: 9px; }
+  .opt {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 13px 15px;
+    background: #f7fcf9;
+    border: 1.5px solid #e0f0e6;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    width: 100%;
+    font-size: 14px; color: #444;
+    line-height: 1.55;
+    font-family: inherit;
+  }
+  .opt:hover { border-color: #52b788; background: #edf8f1; color: #1a3a2a; }
+  .opt.picked {
+    border-color: #2d6a4f; background: #e0f0e6; color: #1a3a2a;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.1);
+  }
+  .opt-dot {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #d8f3dc; color: #2d6a4f;
+    font-size: 12px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all 0.18s;
+  }
+  .opt.picked .opt-dot { background: #2d6a4f; color: #fff; }
+  .opt-text { flex: 1; padding-top: 3px; }
+
+  /* ===== NAV ===== */
+  .nav-wrap {
+    padding: 12px 24px 24px;
+    display: flex; gap: 10px;
+    background: #fff;
+  }
+  .btn {
+    padding: 13px 20px; border-radius: 28px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; border: none;
+    transition: all 0.2s; font-family: inherit;
+    letter-spacing: 1px;
+  }
+  .btn-prev { background: #f0f0f0; color: #999; }
+  .btn-prev:hover:not(:disabled) { background: #e0e0e0; color: #555; }
+  .btn-prev:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-next {
+    background: #2d6a4f; color: #fff; flex: 1;
+  }
+  .btn-next:hover:not(:disabled) { background: #1e4d35; }
+  .btn-next:disabled { background: #ccc; cursor: not-allowed; }
+  .btn-done {
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    color: #fff; flex: 1; display: none;
+  }
+  .btn-done:hover { filter: brightness(1.1); }
+
+  /* ===== RESULT OVERLAY ===== */
+  .result-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .result-overlay.show { display: flex; }
+
+  .result-sheet {
+    width: 100%; max-width: 680px;
+    max-height: 92vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 24px;
+    padding: 36px 24px 48px;
+    animation: sheetUp 0.4s ease;
+  }
+  @keyframes sheetUp {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .result-badge {
+    text-align: center;
+    font-size: 11px;
+    color: #52b788;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .result-char-img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 20px;
+    display: block;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 32px rgba(45,106,79,0.2);
+    border: 3px solid #d8f3dc;
+  }
+  .result-type-name {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 900;
+    color: #1a3a2a;
+    letter-spacing: 6px;
+    margin-bottom: 4px;
+  }
+  .result-type-tag {
+    text-align: center;
+    font-size: 14px;
+    color: #52b788;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+  }
+  .result-emoji {
+    text-align: center;
+    font-size: 72px;
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+  .result-desc {
+    background: linear-gradient(145deg, #152f20, #1e4d35);
+    border-radius: 18px;
+    padding: 24px 22px;
+    margin-bottom: 24px;
+    color: rgba(255,255,255,0.85);
+    font-size: 14px;
+    line-height: 1.9;
+    text-align: left;
+  }
+  .result-desc strong { color: #95d5b2; }
+
+  /* Chart */
+  .result-chart {
+    background: #f7fffe;
+    border: 1.5px solid #d8f3dc;
+    border-radius: 16px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+  }
+  .chart-title {
+    font-size: 12px;
+    color: #888;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .chart-row {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 9px;
+  }
+  .chart-label {
+    font-size: 12px; font-weight: 700;
+    color: #2d6a4f; width: 54px; text-align: right; flex-shrink: 0;
+  }
+  .chart-track {
+    flex: 1; height: 12px;
+    background: #e8f5ee; border-radius: 8px; overflow: hidden;
+  }
+  .chart-fill {
+    height: 100%; background: linear-gradient(90deg, #2d6a4f, #52b788);
+    border-radius: 8px; width: 0%; transition: width 1.2s ease;
+  }
+  .chart-score { font-size: 11px; color: #999; font-weight: 700; width: 26px; }
+
+  /* Second type */
+  .second-type {
+    background: #f0faf4;
+    border: 1.5px dashed #52b788;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+  .second-label {
+    font-size: 11px; color: #52b788;
+    font-weight: 700; letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .second-name { font-size: 18px; font-weight: 800; color: #1a3a2a; margin-bottom: 4px; }
+  .second-desc { font-size: 13px; color: #777; line-height: 1.7; }
+
+  /* Actions */
+  .result-actions { display: flex; flex-direction: column; gap: 10px; }
+  .btn-copy {
+    padding: 14px; border-radius: 28px;
+    background: linear-gradient(135deg, #2d6a4f, #52b788);
+    color: #fff; font-size: 15px; font-weight: 700;
+    border: none; cursor: pointer; font-family: inherit;
+    letter-spacing: 1px;
+  }
+  .btn-retest {
+    padding: 12px; border-radius: 28px;
+    background: #fff; color: #888;
+    border: 1.5px solid #ddd;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+    letter-spacing: 1px;
+  }
+  .share-hint {
+    text-align: center;
+    font-size: 12px; color: #bbb;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="quiz-app">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">⛑️</div>
+    <h1>你是哪种<br><em>安全人</em>？</h1>
+    <p>安全生产专属SBTI人格测试 · 20题版<br>测完自动出结果，还有性格分析报告</p>
+    <div class="hero-badge">🔥 安全圈爆款测试</div>
+  </div>
+
+  <!-- START -->
+  <div class="start-screen" id="startScreen">
+    <div class="start-rules">
+      <div class="start-rules-title">📋 测试说明</div>
+      <ul>
+        <li>共 20 道选择题，每题 4 个选项</li>
+        <li>根据你的第一直觉选择，答案无对错</li>
+        <li>做完立即显示你的专属人格类型</li>
+        <li>结果仅供娱乐参考 😄</li>
+      </ul>
+    </div>
+    <button class="start-btn" onclick="beginQuiz()">🚀 开始测试</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quizZone" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span class="progress-label">第 <strong id="curQNum">1</strong> / 20 题</span>
+        <span class="progress-label" id="pctLabel">0%</span>
+      </div>
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <div class="question-area" id="qArea"></div>
+
+    <div class="nav-wrap">
+      <button class="btn btn-prev" id="btnPrev" onclick="prevQ()" disabled>← 上一题</button>
+      <button class="btn btn-next" id="btnNext" onclick="nextQ()" disabled>下一题 →</button>
+      <button class="btn btn-done" id="btnDone" onclick="showResult()">🎯 查看我的结果</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- RESULT OVERLAY -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-sheet" id="resultSheet">
+    <div class="result-badge">—— 你的安全人格类型 ——</div>
+    <img class="result-char-img" id="resImg" src="" alt="人格画像">
+    <div class="result-type-name" id="resName">加载中…</div>
+    <div class="result-type-tag" id="resTag"></div>
+    <div class="result-desc" id="resDesc"></div>
+
+    <div class="result-chart">
+      <div class="chart-title">📊 你的性格分布</div>
+      <div id="chartContainer"></div>
+    </div>
+
+    <div class="second-type" id="secondBox">
+      <div class="second-label">🧭 你还可能是</div>
+      <div class="second-name" id="secName"></div>
+      <div class="second-desc" id="secDesc"></div>
+    </div>
+
+    <div class="result-actions">
+      <div class="share-hint">转发给你的安全搭档，看看他们是什么类型 👇</div>
+      <button class="btn-copy" id="btnCopy" onclick="copyResult()">📋 复制结果到剪贴板</button>
+      <button class="btn-retest" onclick="retake()">🔄 重新测试一次</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===================== 数据 =====================
+// 类型 → 图片编号（与 chars 文件夹中 1.png~12.png 一一对应）
+const TYPE_IMG = {
+  ZDZ:'1', JCZ:'2', SGZ:'3', LDZ:'4', TPZ:'5',
+  LHZ:'6', KXZ:'7', HSL:'8', BGZ:'9', BGL:'10',
+  XXZ:'11', ZAQ:'12'
+};
+
+const T = {
+  ZDZ: { name:'制度者', tag:'ZDZ · 王者',
+    desc:'你是典型的「制度者」人格！热爱规则、擅长制定各类规章制度，你的文件夹里永远有写不完的SOP。安全在你眼里，没有规矩不成方圆是你的座右铭。同事偶尔嫌你太"教条"，但你知道——安全的事，宁可千人骂，不可一人哭。' },
+  JCZ: { name:'检查者', tag:'JCZ · 侦探',
+    desc:'你是天生的「检查者」！眼睛比精密仪器还灵，再隐蔽的隐患也逃不过你的火眼金睛。你走路自带隐患雷达，别人看不见的风险你一眼扫过就知道。同事们见到你都会下意识检查一下安全带——这是对你最好的尊重！' },
+  SGZ: { name:'甩锅者', tag:'SGZ · 艺术家',
+    desc:'你是传说中的「甩锅艺术家」！出事的那一瞬间，你已经在规划下一步了——配合调查全程积极，签名环节永远缺席。你的反应速度堪比特种兵，只可惜方向用偏了。建议：有时候，勇敢站出来，反而能获得意想不到的信任和认可。' },
+  LDZ: { name:'唠叨者', tag:'LDZ · 守护神',
+    desc:'你是真正的「唠叨守护神」！安全帽安全帽说了八百遍，耳朵起茧了你都不知道。你的嘴巴和你的责任心一样停不下来。别人嫌你烦，但你比谁都清楚：每一句唠叨背后，都是对生命实实在在的敬畏。请继续唠叨，世界真的需要你！' },
+  TPZ: { name:'躺平者', tag:'TPZ · 哲学家',
+    desc:'你是看透一切的「躺平哲学家」！风轻云淡、与世无争，事故发生了也不慌不忙，"反正不是我的事嘛"。你的人生哲学是：尽人事，听天命。但安全这个行当，有时候真的不能太佛系……建议偶尔站起来一下，万一真出事了，躺平可保护不了任何人。' },
+  LHZ: { name:'留痕者', tag:'LHZ · 摄影师',
+    desc:'你是证据确凿的「留痕大师」！截图是你的超能力，拍照是你每天的仪式。你的相册里全是隐患对比图，培训签到你比摄影师还整齐。你的人生格言：没有记录就没有发生。自证清白，你绝对是最专业的！' },
+  KXZ: { name:'恐吓者', tag:'KXZ · 演说家',
+    desc:'你是独树一帜的「恐惧教育家」！事故案例信手拈来，培训视频血腥指数拉满。你坚信：只有把最坏的结果呈现出来，才能真正触动人心。虽然有人说你"贩卖焦虑"，但你的学员看到警示牌时，真的会下意识去检查安全帽有没有戴好——这就是效果！' },
+  HSL: { name:'和事佬', tag:'HSL · 外交家',
+    desc:'你是八面玲珑的「安全外交家」！生产说有道理，安全也没错，你的职责就是让所有人满意。你擅长在各方之间斡旋，化解矛盾于无形。虽然有时候两边都讨好，结果是谁也不真的重视，但职场peace & love确实需要你这样的人！' },
+  BGZ: { name:'表格者', tag:'BGZ · 数据控',
+    desc:'你是真正的「表格艺术家」！万物皆可表格化，数据是你最忠诚的朋友。隐患台账整整齐齐，风险评估图画得比咨询公司PPT还精美。领导看了直点头，但你知道：现场还是那个现场。表格改变不了现实，但可以保护你自己——这就够了！' },
+  BGL: { name:'背锅侠', tag:'BGL · 英雄',
+    desc:'你是善良到令人心疼的「背锅侠」！签字的时候手在抖，但你还是签了。明明不是你的错，但你不愿争辩，因为你相信"清者自清"。你默默承受了太多，愿这个世界对你温柔一点。有时候，真的要学会说——这不是我的责任。' },
+  XXZ: { name:'学习者', tag:'XXZ · 进化者',
+    desc:'你是孜孜不倦的「证书收集狂」！注安、消防、特种设备、职业健康……你的证书比工龄还长。学习是你对抗焦虑的方式，也是你最大的安全感来源。虽然薪资涨幅永远追不上证书数量，但知识永远不会背叛你——你走过的每一步都算数！' },
+  ZAQ: { name:'真安全', tag:'ZAQ · 传说',
+    desc:'你是万里挑一的「真安全」！懂制度、懂现场、更懂人心。你既能写出漂亮的合规文件，也能在现场一句话就让工人心服口服。你是领导信任、同事尊重、工人服气的存在——三者同时做到，在安全圈几乎是神话。请珍惜你身边的每一个真安全——他们真的太稀有了！' }
+};
+
+// 20道逻辑清晰的题目
+const QUESTIONS = [
+  {
+    q:'清晨到工地，你通常先做什么？',
+    opts:[
+      { text:'检查所有人防护装备穿戴是否规范' },
+      { text:'把今日安全注意事项写在看板上' },
+      { text:'掏出手机，把现场整体拍张全景照' },
+      { text:'先坐下喝口水，等人齐了再说' }
+    ]
+  },
+  {
+    q:'工人对你说"就这一次，没事儿的"，你怎么回应？',
+    opts:[
+      { text:'严肃制止，明确指出违反的规章制度条款' },
+      { text:'掏出手机拍下证据，备注好时间地点人物' },
+      { text:'叹口气，心想管不了就不管了' },
+      { text:'给他讲一个某某工地出事的真实案例' }
+    ]
+  },
+  {
+    q:'领导想把安全检查频率降低，你的反应是？',
+    opts:[
+      { text:'翻出法规条文据理力争，一条条念给领导听' },
+      { text:'嘴上答应，背地里还是照常检查不放松' },
+      { text:'配合领导，少写点整改单，大家都轻松' },
+      { text:'两边安抚，说各有各的道理，差不多就行' }
+    ]
+  },
+  {
+    q:'组织安全培训，你最常用什么方式？',
+    opts:[
+      { text:'逐条讲解安全制度，每条都要求记住' },
+      { text:'全程播放事故案例警示视频，越震撼越好' },
+      { text:'发一堆表格让大家填写，培训签到表要最漂亮' },
+      { text:'随便讲讲，反正讲了他们也记不住' }
+    ]
+  },
+  {
+    q:'同事在群里发了一张隐患整改照片，你的第一反应是？',
+    opts:[
+      { text:'保存到相册，这个可以记入隐患整改台账' },
+      { text:'放大仔细看，看整改彻不彻底，有无遗漏' },
+      { text:'点个赞，又完成了一项，生产进度要紧' },
+      { text:'心想：又是照片整改到位，现场照旧' }
+    ]
+  },
+  {
+    q:'现场发现一处隐患但暂时不影响生产，你怎么处理？',
+    opts:[
+      { text:'立即拍照记录，开整改单，限期整改到位' },
+      { text:'口头说一下就行，整改单就不开了太麻烦' },
+      { text:'上报领导，等待指示再说' },
+      { text:'先查一下属于哪条法规，写个分析报告' }
+    ]
+  },
+  {
+    q:'年底写安全工作总结，你最擅长写哪部分？',
+    opts:[
+      { text:'数据说话，用图表展示隐患整改率100%' },
+      { text:'培训最丰富，今年共开展培训XX场' },
+      { text:'整理成文字材料，安全是生命的守护神……' },
+      { text:'直接发截图，整改记录都在图里一目了然' }
+    ]
+  },
+  {
+    q:'发生了轻微未遂事故，你的第一反应是？',
+    opts:[
+      { text:'立刻拍照固定现场，查找责任人' },
+      { text:'组织全员大会，当场分析原因追究责任' },
+      { text:'还好没出事，私下处理就好别声张' },
+      { text:'找各方沟通了解经过，尽量大事化小' }
+    ]
+  },
+  {
+    q:'同事没戴安全帽被拍到发到群里，你是什么心情？',
+    opts:[
+      { text:'太好了，又有证据了，台账有着落了' },
+      { text:'为什么不戴！安全培训白做了吗！' },
+      { text:'心里一紧，但算了不该管的事不管' },
+      { text:'默默截图保存，万一以后追责用得上' }
+    ]
+  },
+  {
+    q:'上级检查被发现问题需要追责，你会怎么做？',
+    opts:[
+      { text:'主动揽下来签个字，毕竟也不完全是别人错' },
+      { text:'仔细核对责任划分，谁的问题谁负责' },
+      { text:'据理力争，查明是制度漏洞就不该罚我' },
+      { text:'协调各方，各打五十大板各让一步' }
+    ]
+  },
+  {
+    q:'下班前你最喜欢做什么？',
+    opts:[
+      { text:'整理今日检查记录，更新隐患整改台账' },
+      { text:'把今天拍的照片分类整理归档' },
+      { text:'再绕现场走一圈，看看有没有新问题' },
+      { text:'下班走人，明天再说' }
+    ]
+  },
+  {
+    q:'新员工入职做安全培训，你会怎么带他？',
+    opts:[
+      { text:'发一本安全手册让他背，重点内容划线' },
+      { text:'带他去现场一个个区域走，边走边讲' },
+      { text:'把历年事故案例做成PPT，放最震撼的视频' },
+      { text:'让他自己看手册吧，讲了也记不住' }
+    ]
+  },
+  {
+    q:'你的手机相册里，最多的内容是什么？',
+    opts:[
+      { text:'各种安全法规条文和标准PDF截图' },
+      { text:'现场隐患照片，整改前后对比图存档' },
+      { text:'考证学习视频截图和成绩截图' },
+      { text:'工作照风景照，和安全没太大关系' }
+    ]
+  },
+  {
+    q:'领导夸你安全工作做得好，你怎么回应？',
+    opts:[
+      { text:'把相关数据整理好，记入今年工作亮点' },
+      { text:'哪里哪里，主要是领导指导有方，制度完善' },
+      { text:'嗯，还有不到位的地方，请多批评指正' },
+      { text:'心里高兴但表面淡定：嗯，继续努力' }
+    ]
+  },
+  {
+    q:'工人抱怨"你们安全的天天来烦，有意思吗"，你怎么说？',
+    opts:[
+      { text:'掏出手机拍下他没戴手套的证据' },
+      { text:'给他看一张事故受伤案例的照片' },
+      { text:'微笑不说话，默默记在心里' },
+      { text:'我也知道你辛苦，但万一出事你家人怎么办' }
+    ]
+  },
+  {
+    q:'如果要你在朋友圈发一条和安全相关的内容，你会发？',
+    opts:[
+      { text:'今日安全检查发现隐患X项全部整改，配9张图' },
+      { text:'安全不是口号，是每个人的责任，配警示标语' },
+      { text:'算了不发了，发了也没人看还招人烦' },
+      { text:'想发但怕别人觉得我太较真，算了' }
+    ]
+  },
+  {
+    q:'你办公桌上最显眼的东西是什么？',
+    opts:[
+      { text:'一叠厚厚的安全管理制度文件夹' },
+      { text:'一本厚厚的隐患台账（已写满好几本）' },
+      { text:'一张和领导握手的合影（安全生产先进）' },
+      { text:'空空如也，反正天天在工地上待着' }
+    ]
+  },
+  {
+    q:'你觉得自己在安全工作中最大的优势是什么？',
+    opts:[
+      { text:'熟悉所有法规条文，制度写得出类拔萃' },
+      { text:'眼观六路，任何隐患都逃不过我的眼睛' },
+      { text:'善于沟通协调，生产和安全两边都处得来' },
+      { text:'持续学习，每年都在考证提升自己' }
+    ]
+  },
+  {
+    q:'用一句话形容你的安全生涯，你会说？',
+    opts:[
+      { text:'文件等身，制度等高，台账等时——完美闭环' },
+      { text:'检查千遍，隐患万条，现场依然涛声依旧' },
+      { text:'唠叨千遍，不改如故，唯有叹息无数' },
+      { text:'做了很多，但好像也没人在意，就这样吧' }
+    ]
+  },
+  {
+    q:'做完这篇测试，你的想法是？',
+    opts:[
+      { text:'不错！转发给所有同事，让大家一起测' },
+      { text:'挺有意思，看看我是什么类型（内心期待ZAQ）' },
+      { text:'准不准先不论，先截图发群里让大家看看' },
+      { text:'又是什么奇怪测试，不过既然点开了' }
+    ]
+  }
+];
+
+// 选项→类型映射（20题每题ABCD对应不同类型分布）
+const TYPE_MAP = [
+  ['JCZ','ZDZ','LHZ','TPZ'],    // Q1
+  ['ZDZ','LHZ','TPZ','KXZ'],    // Q2
+  ['ZDZ','JCZ','SGZ','HSL'],    // Q3
+  ['ZDZ','KXZ','BGZ','TPZ'],    // Q4
+  ['LHZ','JCZ','HSL','TPZ'],    // Q5
+  ['JCZ','TPZ','HSL','ZDZ'],    // Q6
+  ['BGZ','XXZ','KXZ','LHZ'],    // Q7
+  ['LHZ','KXZ','TPZ','HSL'],    // Q8
+  ['LHZ','LDZ','TPZ','SGZ'],    // Q9
+  ['BGL','JCZ','ZDZ','HSL'],    // Q10
+  ['BGZ','LHZ','JCZ','TPZ'],    // Q11
+  ['ZDZ','JCZ','KXZ','TPZ'],    // Q12
+  ['ZDZ','LHZ','XXZ','TPZ'],    // Q13
+  ['BGZ','HSL','JCZ','TPZ'],    // Q14
+  ['LHZ','KXZ','BGL','LDZ'],    // Q15
+  ['BGZ','KXZ','TPZ','HSL'],    // Q16
+  ['ZDZ','BGZ','XXZ','TPZ'],    // Q17
+  ['ZDZ','JCZ','HSL','XXZ'],    // Q18
+  ['BGZ','LHZ','LDZ','TPZ'],    // Q19
+  ['LDZ','XXZ','LHZ','TPZ'],    // Q20
+];
+
+// ===================== 状态 =====================
+let curQ = 0;
+let answers = []; // answers[Qindex] = optionIndex(0-3)
+const letters = ['A','B','C','D'];
+
+// ===================== 初始化 =====================
+function buildQuiz() {
+  const area = document.getElementById('qArea');
+  QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'q-card' + (idx === 0 ? ' active' : '');
+    card.id = `qCard${idx}`;
+    card.innerHTML = `
+      <div class="q-number">第 ${idx+1} 题</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">
+        ${q.opts.map((opt, oi) => `
+          <button class="opt" id="opt${idx}_${oi}" onclick="pick(${idx},${oi})">
+            <span class="opt-dot">${letters[oi]}</span>
+            <span class="opt-text">${opt.text}</span>
+          </button>
+        `).join('')}
+      </div>
+    `;
+    area.appendChild(card);
+  });
+}
+
+function beginQuiz() {
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('quizZone').style.display = 'block';
+  answers = new Array(20).fill(-1);
+  buildQuiz();
+  refreshUI();
+}
+
+function pick(qIdx, oIdx) {
+  answers[qIdx] = oIdx;
+  // update UI
+  document.querySelectorAll(`#qCard${qIdx} .opt`).forEach(b => b.classList.remove('picked'));
+  document.getElementById(`opt${qIdx}_${oIdx}`).classList.add('picked');
+  refreshUI();
+
+  // 答完第20题自动弹出结果
+  if (qIdx === 19) {
+    setTimeout(() => {
+      const unanswered = answers.filter(a => a === -1).length;
+      if (unanswered === 0) showResult();
+    }, 350);
+  }
+}
+
+function refreshUI() {
+  const answered = answers.filter(a => a !== -1).length;
+  const pct = Math.round((answered / 20) * 100);
+  document.getElementById('curQNum').textContent = curQ + 1;
+  document.getElementById('pctLabel').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // show correct card
+  document.querySelectorAll('.q-card').forEach(c => c.classList.remove('active'));
+  document.getElementById(`qCard${curQ}`).classList.add('active');
+
+  // buttons
+  document.getElementById('btnPrev').disabled = (curQ === 0);
+  const hasAnswer = answers[curQ] !== -1;
+  const isLast = curQ === 19;
+  document.getElementById('btnNext').style.display = isLast ? 'none' : '';
+  document.getElementById('btnDone').style.display = isLast ? '' : 'none';
+  document.getElementById('btnNext').disabled = !hasAnswer || isLast;
+  document.getElementById('btnDone').disabled = !hasAnswer;
+}
+
+function nextQ() {
+  if (curQ < 19 && answers[curQ] !== -1) {
+    curQ++;
+    refreshUI();
+  }
+}
+
+function prevQ() {
+  if (curQ > 0) {
+    curQ--;
+    refreshUI();
+  }
+}
+
+function showResult() {
+  console.log('showResult called, answers:', answers);
+  const unanswered = answers.filter(a => a === -1).length;
+  console.log('unanswered:', unanswered);
+  if (unanswered > 0) { alert('还有' + unanswered + '题没答完！'); return; }
+
+  // count scores
+  const score = {};
+  answers.forEach((ans, qIdx) => {
+    if (ans === -1) return;
+    const type = TYPE_MAP[qIdx][ans];
+    score[type] = (score[type] || 0) + 1;
+  });
+
+  const sorted = Object.entries(score).sort((a,b) => b[1]-a[1]);
+  const top = sorted[0];
+  // 防止只有1种类型时 sorted[1] 为 undefined
+  const sec = sorted.length > 1 ? sorted[1] : sorted[0];
+
+  const t1 = T[top[0]];
+  const t2 = T[sec[0]];
+
+  // 设置人物图片
+  const imgNum = TYPE_IMG[top[0]] || '1';
+  document.getElementById('resImg').src = `./chars/${imgNum}.png`;
+
+  document.getElementById('resName').textContent = t1.name;
+  document.getElementById('resTag').textContent = t1.tag;
+  document.getElementById('resDesc').innerHTML = t1.desc;
+
+  // 次类型名称（从emoji映射回去）
+  const emojiMap = { '📋':'制度者','🔍':'检查者','🏃':'甩锅者','😤':'唠叨者',
+    '😴':'躺平者','📸':'留痕者','🚨':'恐吓者','🤝':'和事佬','📊':'表格者',
+    '🧨':'背锅侠','🎓':'学习者','🦺':'真安全' };
+  document.getElementById('secName').textContent = `${t2.name}`;
+  document.getElementById('secDesc').textContent =
+    `你与「${t2.name}」特征有约${Math.round(sec[1]/20*100)}%的契合度，属于复合型安全人格。`;
+
+  // chart
+  const top6 = sorted.slice(0, 6);
+  const maxS = top6.length > 0 ? top6[0][1] : 1;
+  const chartHtml = top6.map(([type, cnt]) => {
+    const t = T[type];
+    const pct = Math.round(cnt/20*100);
+    const barW = Math.round(cnt/maxS*100);
+    return `
+      <div class="chart-row">
+        <div class="chart-label">${t.name}</div>
+        <div class="chart-track"><div class="chart-fill" data-w="${barW}"></div></div>
+        <div class="chart-score">${cnt}/20</div>
+      </div>
+    `;
+  }).join('');
+  document.getElementById('chartContainer').innerHTML = chartHtml;
+
+  document.getElementById('resultOverlay').classList.add('show');
+
+  setTimeout(() => {
+    document.querySelectorAll('.chart-fill').forEach(b => {
+      b.style.width = b.dataset.w + '%';
+    });
+  }, 200);
+}
+
+function copyResult() {
+  const name = document.getElementById('resName').textContent;
+  const tag = document.getElementById('resTag').textContent;
+  const imgNum = document.getElementById('resImg').src.split('/').pop().replace('.png','');
+
+  const text = `✅ 我的安全人格类型：${name}（${tag}）
+
+我是哪种安全人？来做SBTI测试！
+#安全人 #SBTI #EHS #安全生产`;
+
+  navigator.clipboard && navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('btnCopy');
+    btn.textContent = '✅ 已复制！快去分享给朋友';
+    setTimeout(() => btn.textContent = '📋 复制结果到剪贴板', 2500);
+  });
+}
+
+function retake() {
+  answers = new Array(20).fill(-1);
+  curQ = 0;
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.querySelectorAll('.opt').forEach(b => b.classList.remove('picked'));
+  // rebuild
+  document.getElementById('qArea').innerHTML = '';
+  buildQuiz();
+  refreshUI();
+}
+
+// click outside sheet to close
+document.addEventListener('click', function(e) {
+  const overlay = document.getElementById('resultOverlay');
+  const sheet = document.getElementById('resultSheet');
+  if (overlay.classList.contains('show') && !sheet.contains(e.target)) {
+    // don't close on outside click, let user use buttons
+  }
+});
+</script>
+</body>
+</html>
